@@ -622,20 +622,17 @@ const savedExpenses = getStoredData('expenses');
 const savedTheme = getStoredData('theme');
 const savedStudentType = getStoredData('studentType');
 const savedCurrency = getStoredData('selectedCurrency');
-balance = savedBalance || 0;
-expenses = savedExpenses || [];
-if (savedTheme) {
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  document.getElementById('theme-icon').innerHTML = savedTheme === 'light' ? '&#x2600;&#xFE0F;' : '&#x1F31B;';
+if (savedBalance !== null) {
+  balance = savedBalance;
+  document.getElementById('total-balance').textContent = `${currencySymbols[selectedCurrency]}${(balance / conversionRates[selectedCurrency]).toFixed(2)}`;
+  document.getElementById('total-balance').className = balance >= 0 ? 'balance-positive' : 'balance-negative';
 } else {
-  document.documentElement.setAttribute('data-theme', 'dark');
-  document.getElementById('theme-icon').innerHTML = '&#x1F31B;';
+  balance = 0;
 }
+expenses = savedExpenses || [];
+if (savedTheme) {} else {}
 if (savedStudentType) {}
-if (savedCurrency) {
-  selectedCurrency = savedCurrency;
-  document.getElementById('currency-selector').value = savedCurrency;
-}
+if (savedCurrency) {}
 function toggleTheme() {
   const currentTheme = document.documentElement.getAttribute('data-theme');
   const newTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -782,6 +779,10 @@ document.addEventListener('touchstart', function (e) {
 updateChart();
 document.addEventListener('DOMContentLoaded', function () {
   updateExpenseList();
+  if (balance !== 0) {
+    document.getElementById('total-balance').textContent = `${currencySymbols[selectedCurrency]}${(balance / conversionRates[selectedCurrency]).toFixed(2)}`;
+    document.getElementById('total-balance').className = balance >= 0 ? 'balance-positive' : 'balance-negative';
+  }
 });
 document.getElementById('currency-selector').addEventListener('change', e => {
   selectedCurrency = e.target.value;
