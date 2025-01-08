@@ -1,4 +1,4 @@
-<html><head><base href="/">
+<html data-theme="dark"><head><base href="/">
   <title>Budget Buddy - Student Finance Management</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
@@ -570,7 +570,8 @@
   <footer class="footer">
     Created with Love by the students of Valley Vista High School
   </footer>
-  <script>let balance = 0;
+  <script>document.documentElement.setAttribute('data-theme', 'dark');
+let balance = 0;
 let expenses = [];
 let expenseChart = null;
 let studentType = '';
@@ -620,19 +621,22 @@ function setStoredData(key, value) {
 const savedBalance = getStoredData('balance');
 const savedExpenses = getStoredData('expenses');
 const savedTheme = getStoredData('theme');
+if (savedTheme) {
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  const themeIcon = document.getElementById('theme-icon');
+  themeIcon.innerHTML = savedTheme === 'light' ? '&#x2600;&#xFE0F;' : '&#x1F31B;';
+} else {
+  document.documentElement.setAttribute('data-theme', 'dark');
+  document.getElementById('theme-icon').innerHTML = '&#x1F31B;';
+}
 const savedStudentType = getStoredData('studentType');
 const savedCurrency = getStoredData('selectedCurrency');
-if (savedBalance !== null) {
-  balance = savedBalance;
-  document.getElementById('total-balance').textContent = `${currencySymbols[selectedCurrency]}${(balance / conversionRates[selectedCurrency]).toFixed(2)}`;
-  document.getElementById('total-balance').className = balance >= 0 ? 'balance-positive' : 'balance-negative';
-} else {
-  balance = 0;
-}
+balance = savedBalance || 0;
 expenses = savedExpenses || [];
 if (savedTheme) {} else {}
 if (savedStudentType) {}
 if (savedCurrency) {}
+if (savedBalance) {}
 function toggleTheme() {
   const currentTheme = document.documentElement.getAttribute('data-theme');
   const newTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -779,10 +783,14 @@ document.addEventListener('touchstart', function (e) {
 updateChart();
 document.addEventListener('DOMContentLoaded', function () {
   updateExpenseList();
-  if (balance !== 0) {
+  if (balance) {
     document.getElementById('total-balance').textContent = `${currencySymbols[selectedCurrency]}${(balance / conversionRates[selectedCurrency]).toFixed(2)}`;
     document.getElementById('total-balance').className = balance >= 0 ? 'balance-positive' : 'balance-negative';
   }
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  const themeIcon = document.getElementById('theme-icon');
+  themeIcon.innerHTML = currentTheme === 'light' ? '&#x2600;&#xFE0F;' : '&#x1F31B;';
 });
 document.getElementById('currency-selector').addEventListener('change', e => {
   selectedCurrency = e.target.value;
