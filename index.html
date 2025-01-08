@@ -1,4 +1,4 @@
-<html data-theme="dark"><head><base href="/">
+<html><head><base href="/">
   <title>Budget Buddy - Student Finance Management</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
@@ -350,6 +350,21 @@
       color: var(--text);
     }
 
+    .reset-button {
+      background: var(--accent);
+      color: white;
+      padding: 1rem 2rem;
+      margin: 2rem auto;
+      display: block;
+      width: 200px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .reset-button:hover {
+      background: color-mix(in srgb, var(--accent) 80%, black);
+    }
+
     @media (max-width: 768px) {
       .dashboard {
         grid-template-columns: 1fr;
@@ -452,6 +467,11 @@
         display: block !important;  /* Force display */
         margin-bottom: 1rem;
       }
+      .reset-button {
+        width: 180px;
+        padding: 0.8rem 1.6rem;
+        margin: 1.5rem auto;
+      }
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -524,6 +544,7 @@
         <h2>Recent Expenses</h2>
         <ul id="expense-list"></ul>
       </div>
+      <button class="reset-button" onclick="resetAllData()">Reset All Data</button>
     </div>
   </div>
 
@@ -771,6 +792,38 @@ function toggleHelp() {
   const helpModal = document.getElementById('help-modal');
   helpModalOpen = !helpModalOpen;
   helpModal.style.display = helpModalOpen ? 'block' : 'none';
+}
+function resetAllData() {
+  if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+    // Clear localStorage
+    localStorage.clear();
+    
+    // Clear cookies
+    const cookies = document.cookie.split(";");
+    for (let cookie of cookies) {
+      const eqPos = cookie.indexOf("=");
+      const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+    }
+    
+    // Reset variables
+    balance = 0;
+    expenses = [];
+    studentType = '';
+    
+    // Update UI
+    updateBalance(0);
+    updateExpenseList();
+    updateChart();
+    
+    // Show welcome screen again
+    document.getElementById('welcome-screen').style.display = 'flex';
+    document.getElementById('main-content').style.display = 'none';
+    
+    // Reset currency to default
+    selectedCurrency = 'USD';
+    document.getElementById('currency-selector').value = 'USD';
+  }
 }
 function convertAmount(amount, fromCurrency, toCurrency) {
   return amount / conversionRates[fromCurrency] * conversionRates[toCurrency];
